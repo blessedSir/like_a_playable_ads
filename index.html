@@ -180,17 +180,17 @@
         @keyframes spinClick {
             0% {
                 transform: translateX(-50%) scale(1);
-                filter: drop-shadow(0 0 0px #000000);
+
             }
 
             50% {
                 transform: translateX(-50%) scale(0.9);
-                filter: drop-shadow(0 0 5px #000000);
+
             }
 
             100% {
                 transform: translateX(-50%) scale(1);
-                filter: drop-shadow(0 0 0px #000000);
+
             }
         }
 
@@ -405,6 +405,17 @@
             }
         }
 
+        @media (max-width: 1920px) {
+            .treasure-progress {
+                right: 36%;
+            }
+        }
+
+        @media (max-width: 1400px) {
+            .treasure-progress {
+                right: 50%;
+            }
+        }
 
         @media (max-width: 1024px) {
 

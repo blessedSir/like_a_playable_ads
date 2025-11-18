@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Slots</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: sans-serif;
+            background: url('./items/bg.webp') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .ui-container {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1vh;
+            z-index: 10;
+        }
+
+        .balance {
+            top: 3%;
+            position: absolute;
+            width: 30%;
+            padding: 3px;
+            text-align: center;
+            font-size: 2vh;
+            color: #fff;
+            text-shadow: 0 0 3px black;
+            background: #4739ff;
+            border-radius: 20px;
+            border: 3px solid gold;
+            z-index: 2;
+            color: gold;
+        }
+
+        .progress-container {
+            width: 45vw;
+            max-width: 450px;
+            height: 2vh;
+            background: #4739ff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 5px solid yellow;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, gold, orange);
+            transition: width 0.5s;
+        }
+
+        #musicBtn {
+            position: absolute;
+            top: 1%;
+            left: 2%;
+            padding: 0.5vh 1vw;
+            font-size: 1.8vh;
+            cursor: pointer;
+            background: #ffffff4f;
+            border: none;
+            z-index: 2;
+        }
+
+
+        #musicBtn>img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            display: block;
+        }
+
+
+        .slot-machine-container {
+            position: relative;
+            width: 80vw;
+            max-width: 992px;
+            z-index: 1;
+        }
+
+        .slot-bg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .slot-machine {
+            position: absolute;
+            top: 39%;
+            left: 49%;
+            transform: translateX(-50%);
+            width: 46%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            z-index: -1;
+        }
+
+        .reel {
+            width: 20%;
+            height: 30%;
+            overflow: hidden;
+            border-radius: 1vh;
+            background: #faedb5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .reel-track {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            width: 100%;
+            top: 0;
+        }
+
+        .reel:not(:last-child) {
+            border-right: 5px solid #d8cd6a;
+        }
+
+        .symbol {
+            width: 100%;
+            height: 33.33%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .symbol img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #spinBtn {
+            position: absolute;
+            bottom: 13.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            max-width: 280px;
+            height: auto;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            z-index: 3;
+        }
+
+        #spinBtn img {
+            display: block;
+            width: 100%;
+            height: auto;
+            pointer-events: none;
+        }
+
+        #spinBtn.clicked {
+            animation: spinClick 0.2s forwards;
+
+        }
+
+        @keyframes spinClick {
+            0% {
+                transform: translateX(-50%) scale(1);
+                filter: drop-shadow(0 0 0px #000000);
+            }
+
+            50% {
+                transform: translateX(-50%) scale(0.9);
+                filter: drop-shadow(0 0 5px #000000);
+            }
+
+            100% {
+                transform: translateX(-50%) scale(1);
+                filter: drop-shadow(0 0 0px #000000);
+            }
+        }
+
+        #spinBtn img {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: transparent;
+            filter: drop-shadow(0 0 0 transparent);
+        }
+
+        .treasure-progress {
+            position: absolute;
+            width: 4%;
+            height: 9%;
+            top: 7.5%;
+            right: 33%;
+            z-index: 100;
+            display: inline-block;
+            animation: smoothSwing 2s infinite linear;
+
+        }
+
+        @keyframes smoothSwing {
+            0% {
+                transform: rotate(-5deg);
+            }
+
+            50% {
+                transform: rotate(5deg);
+            }
+
+            100% {
+                transform: rotate(-5deg);
+            }
+        }
+
+
+        .treasure-left,
+        .treasure-right {
+            position: absolute;
+            z-index: 1;
+            width: 20%;
+            height: 30%;
+            bottom: 10%;
+            animation: shakeScale 3s infinite ease-in-out;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+        }
+
+        .treasure-left {
+            left: 3%;
+            transform-origin: center center;
+        }
+
+        .treasure-right {
+            right: 3%;
+            transform-origin: center center;
+
+        }
+
+        .coin {
+            position: absolute;
+            top: 0%;
+            left: 33%;
+            width: 5%;
+            height: 10%;
+            z-index: 3;
+        }
+
+        .progress-percent {
+            position: absolute;
+            top: -25%;
+            left: -10%;
+            width: 15%;
+            height: 100%;
+            padding: 5px;
+            z-index: 3000;
+            font-size: 2vh;
+            color: rgb(0, 0, 0);
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 0 0 1px black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(90deg, gold, orange);
+            border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 200;
+        }
+
+        .reward-modal {
+            position: relative;
+            text-align: center;
+            animation: fade-in 0.4s ease forwards;
+        }
+
+        .chests {
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .chest {
+            width: 90px;
+            opacity: 0.4;
+            transition: transform 1s ease-out, opacity 0.6s;
+        }
+
+        .chest.big {
+            width: 120px;
+        }
+
+
+        #mainChest.animate {
+            opacity: 1;
+            animation: chest-rise 1.1s ease-out forwards, chest-pulse 2s infinite ease-in-out 1.1s;
+        }
+
+        @keyframes chest-rise {
+            0% {
+                transform: translateY(40px) scale(1);
+            }
+
+            60% {
+                transform: translateY(-20px) scale(1.8);
+            }
+
+            100% {
+                transform: translateY(-10px) scale(2);
+            }
+        }
+
+        /* Пульсация */
+        @keyframes chest-pulse {
+            0% {
+                transform: translateY(-10px) scale(2);
+            }
+
+            50% {
+                transform: translateY(-14px) scale(2.05);
+            }
+
+            100% {
+                transform: translateY(-10px) scale(2);
+            }
+        }
+
+
+        .cta-btn {
+            font-size: 20px;
+            padding: 14px 26px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #ffcc33, #ff8c00);
+            color: #000;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 18px rgba(255, 196, 0, 0.6);
+            transition: transform 0.25s;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.06);
+        }
+
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shakeScale {
+            0% {
+                transform: translateX(0) scale(1);
+            }
+
+            25% {
+                transform: translateX(-3px) scale(1.03);
+            }
+
+            50% {
+                transform: translateX(3px) scale(0.97);
+            }
+
+            75% {
+                transform: translateX(-2px) scale(1.02);
+            }
+
+            100% {
+                transform: translateX(0) scale(1);
+            }
+        }
+
+
+        @media (max-width: 1024px) {
+
+            .treasure-progress {
+                right: 26%;
+            }
+
+            .progress-percent {
+                top: -20%;
+                left: -5%;
+            }
+
+            .coin {
+                left: 33%;
+            }
+
+            .slot-machine-container {
+                width: 90vw;
+            }
+
+            .slot-machine {
+                top: 40%;
+                height: 100%;
+            }
+
+            .reel {
+                width: 20%;
+            }
+
+            #spinBtn {
+                width: 29%;
+            }
+
+            .balance {
+                font-size: 2.2vh;
+            }
+
+            .progress-container {
+                width: 65vw;
+            }
+
+
+        }
+
+        @media (max-width: 768px) {
+
+            .treasure-progress {
+                right: 19%;
+                width: 5%;
+
+            }
+
+            .progress-percent {
+                top: -20%;
+            }
+
+            .coin {
+                top: 0%;
+                left: 33%;
+            }
+
+            .slot-machine-container {
+                width: 95vw;
+            }
+
+            .slot-machine {
+                top: 40%;
+                height: 100%;
+            }
+
+            .reel {
+                width: 20%;
+            }
+
+            #spinBtn {
+                width: 29%;
+            }
+
+            .balance {
+                font-size: 2.5vw;
+            }
+
+            .progress-container {
+                width: 75vw;
+            }
+
+
+        }
+
+        @media (max-width: 480px) {
+
+            .treasure-progress {
+                top: 12%;
+                right: 7%;
+                width: 10%;
+            }
+
+            .progress-percent {
+                top: -10%;
+                left: 10;
+            }
+
+
+
+            .ui-container {
+                top: 15%;
+            }
+
+            #musicBtn>img {
+                width: 30px;
+                height: 30px;
+
+            }
+
+            .coin {
+                top: 0%;
+                left: 29%;
+                width: 10%;
+            }
+
+            .treasure-left,
+            .treasure-right {
+                width: 20%;
+                height: 20%;
+            }
+
+            .slot-machine {
+                top: 40%;
+                height: 100%;
+            }
+
+            .reel {
+                width: 20%;
+            }
+
+            #spinBtn {
+                width: 30%;
+            }
+
+            .balance {
+                font-size: 3vw;
+            }
+
+            .progress-container {
+                width: 80vw;
+                height: 3vh;
+            }
+
+
+        }
+    </style>
+</head>
+
+<body>
+    <button id="musicBtn"><img class="inner-btn" src="./items/note.png" /></button>
+    <img class="coin" src="./items/coin.png" />
+    <div class="balance"><span id="balance">150000</span>$</div>
+    <div class="ui-container">
+
+        <div class="progress-percent" id="progressPercent">0%</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+
+    </div>
+    <img class="treasure-progress" src="./items/openTreasure.png" />
+    <div class="slot-machine-container">
+        <img src="./items/SlotMachineNoBT.png" class="slot-bg" alt="slot machine">
+        <div class="slot-machine">
+            <div class="reel" id="reel1">
+                <div class="reel-track"></div>
+            </div>
+            <div class="reel" id="reel2">
+                <div class="reel-track"></div>
+            </div>
+            <div class="reel" id="reel3">
+                <div class="reel-track"></div>
+            </div>
+            <div class="reel" id="reel4">
+                <div class="reel-track"></div>
+            </div>
+            <div class="reel" id="reel5">
+                <div class="reel-track"></div>
+            </div>
+        </div>
+        <button id="spinBtn">
+            <img src="./items/SpinButton.png" alt="spin">
+        </button>
+    </div>
+    <img class="treasure-left" src="./items/openTreasure_right.png" />
+    <img class="treasure-right" src="./items/openTreasure.png" />
+    </div>
+    <div class="modal-bg">
+        <div class="reward-modal">
+
+            <div class="chests">
+                <img src="./items/openTreasure.png" class="chest small">
+                <img src="./items/openTreasure.png" class="chest big" id="mainChest">
+                <img src="./items/openTreasure.png" class="chest small">
+            </div>
+
+            <button class="cta-btn">Claim your reward</button>
+        </div>
+    </div>
+    <audio id="spinSound" src="./items/Spin.mp3"></audio>
+    <audio id="bgMusic" src="./items/BackgroundMusic.mp3"></audio>
+
+    <script>
+        const backgroundMusic = document.getElementById("bgMusic");
+        backgroundMusic.volume = 0.06;
+
+        const reels = [...document.querySelectorAll(".reel-track")];
+        const balanceEl = document.getElementById("balance");
+        const progressBar = document.getElementById("progressBar");
+        const progressPercent = document.getElementById("progressPercent");
+        const spinBtn = document.getElementById("spinBtn");
+        const musicBtn = document.getElementById('musicBtn');
+        const spinSound = document.getElementById("spinSound");
+        let musicStarted = false;
+        let balance = 150000;
+        let progress = 0;
+        let spinCount = 0;
+
+        const progressMax = 1000000;
+
+        const modalBg = document.querySelector(".modal-bg");
+        const mainChest = document.getElementById("mainChest");
+
+        const symbols = [
+            "./items/symbols/Cherry.png",
+            "./items/symbols/Grape.png",
+            "./items/symbols/Kiwi.png",
+            "./items/symbols/Orange.png",
+            "./items/symbols/Seven.png",
+            "./items/symbols/Strawberry.png"
+        ];
+
+        musicBtn.addEventListener('click', () => {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+            } else {
+                backgroundMusic.pause();
+            }
+        });
+
+        document.body.addEventListener('click', () => {
+            if (!musicStarted) {
+                backgroundMusic.play().catch(err => console.log(err));
+                musicStarted = true;
+            }
+        });
+
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        function initReel(track) {
+            const top = getRandomSymbol();
+            const center = getRandomSymbol();
+            const bottom = getRandomSymbol();
+            track.innerHTML = `
+            <div class="symbol"><img src="${top}"></div>
+            <div class="symbol"><img src="${center}"></div>
+            <div class="symbol"><img src="${bottom}"></div>
+        `;
+        }
+
+        reels.forEach(initReel);
+
+        async function spinReel(track, winSymbol, delay) {
+            return new Promise(resolve => {
+                const interval = setInterval(() => {
+                    const r1 = getRandomSymbol();
+                    const r2 = getRandomSymbol();
+                    const r3 = getRandomSymbol();
+                    track.innerHTML = `
+                    <div class="symbol"><img src="${r1}"></div>
+                    <div class="symbol"><img src="${r2}"></div>
+                    <div class="symbol"><img src="${r3}"></div>
+                `;
+                }, 50);
+
+                setTimeout(() => {
+                    clearInterval(interval);
+                    track.innerHTML = `
+                    <div class="symbol"><img src="${getRandomSymbol()}"></div>
+                    <div class="symbol"><img src="${winSymbol}"></div>
+                    <div class="symbol"><img src="${getRandomSymbol()}"></div>
+                `;
+                    resolve();
+                }, delay);
+            });
+        }
+
+        async function spin() {
+            if (spinCount >= 3) return;
+
+            spinBtn.disabled = true;
+            spinSound.play();
+
+            const winSymbol = getRandomSymbol();
+
+            await Promise.all(
+                reels.map((track, i) =>
+                    spinReel(track, winSymbol, 1200 + i * 300)
+                )
+            );
+
+            const win = spinCount < 2 ? 333333 : 333334;
+
+            balance += win;
+            balanceEl.textContent = balance.toLocaleString();
+
+            progress += win;
+
+            const percent = Math.min(100, Math.floor((progress / progressMax) * 100));
+            progressBar.style.width = percent + "%";
+            progressPercent.textContent = percent + "%";
+
+            spinCount++;
+
+            if (spinCount === 3) {
+                setTimeout(() => {
+                    modalBg.style.display = "flex";
+                    mainChest.classList.add("animate");
+                }, 500);
+            }
+
+            spinBtn.disabled = false;
+        }
+
+        spinBtn.addEventListener("click", spin);
+
+        document.querySelector(".cta-btn").addEventListener("click", () => {
+            modalBg.style.display = "none";
+        });
+    </script>
+
+
+</body>
+
+</html>
